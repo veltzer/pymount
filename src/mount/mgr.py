@@ -1,16 +1,16 @@
 import os
 import subprocess
-from typing import List
+from typing import List, Dict
 
 
 class Manager:
     def __init__(self):
-        self.devices = []  # type: List[str]
-        self.mounted_devices = set()
-        self.get_media_devices()
-        self.get_mounts()
+        self._devices = []  # type: List[str]
+        self._mounted_devices = dict()  # type: Dict[str,str]
+        self._get_media_devices()
+        self._get_mounts()
 
-    def get_media_devices(self):
+    def _get_media_devices(self):
         # If the major number is 8, that indicates it to be a disk device.
         #
         # The minor number is the partitions on the same device:
@@ -32,17 +32,22 @@ class Manager:
                     
                     if os.path.islink(path):
                         if os.path.realpath(path).find("/usb") > 0:
-                            self.devices.append("/dev/" + device_name)
+                            self._devices.append("/dev/" + device_name)
 
-    def get_mounts(self):
+    def _get_mounts(self):
         with open("/proc/mounts", "rt") as file_handle:
             for line in file_handle:
                 line = line.rstrip()
                 parts = line.split(" ")
-                self.mounted_devices.add(parts[0])
+                part_device = parts[0]
+                part_mount_point = parts[1]
+                self._mounted_devices[part_device] = part_mount_point
 
     def is_mounted(self, device):
-        return device in self.mounted_devices
+        return device in self._mounted_devices
+
+    def get_mount_point(self, device):
+        return self._mounted_devices[device]
 
     @staticmethod
     def get_device_name(device):
@@ -122,7 +127,7 @@ class Manager:
         return None
 
     def print_me(self):
-        for device in self.devices:
+        for device in self._devices:
             self.mount(device)
             print("Drive:", self.get_device_name(device))
             print("Mounted:", "Yes" if self.is_mounted(device) else "No")
