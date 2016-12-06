@@ -6,7 +6,9 @@ from typing import List
 class Manager:
     def __init__(self):
         self.devices = []  # type: List[str]
+        self.mounted_devices = set()
         self.get_media_devices()
+        self.get_mounts()
 
     def get_media_devices(self):
         # If the major number is 8, that indicates it to be a disk device.
@@ -19,7 +21,7 @@ class Manager:
         # The maximum number of partitions is 15.
         #
         # Use `$ sudo fdisk -l` and `$ sudo sfdisk -l /dev/sda` for more information.
-        with open("/proc/partitions", "r") as f:
+        with open("/proc/partitions", "rt") as f:
             for line in f.readlines()[2:]:  # skip header lines
                 words = [word.strip() for word in line.split()]
                 minor_number = int(words[1])
@@ -31,6 +33,16 @@ class Manager:
                     if os.path.islink(path):
                         if os.path.realpath(path).find("/usb") > 0:
                             self.devices.append("/dev/" + device_name)
+
+    def get_mounts(self):
+        with open("/proc/mounts", "rt") as file_handle:
+            for line in file_handle:
+                line = line.rstrip()
+                parts = line.split(" ")
+                self.mounted_devices.add(parts[0])
+
+    def is_mounted(self, device):
+        return device in self.mounted_devices
 
     @staticmethod
     def get_device_name(device):
@@ -50,9 +62,6 @@ class Manager:
             device
         ]).decode()
         return output.split("\n")[-2].split()[0].strip()
-
-    def is_mounted(self, device):
-        return os.path.ismount(self.get_media_path(device))
 
     def mount_partition(self, partition, name="usb"):
         path = self.get_media_path(name)
