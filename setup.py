@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='mount',
-    version='0.0.1',
+    version='0.0.2',
     description='module to help you mount and unmount file systems',
     long_description='programmatic API to /proc/partitions and /proc/mounts',
     url='https://veltzer.github.io/mount',
