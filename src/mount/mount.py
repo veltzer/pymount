@@ -1,138 +1,125 @@
 import os
 import subprocess
+from typing import List
 
 
-def list_media_devices():
-    # If the major number is 8, that indicates it to be a disk device.
-    #
-    # The minor number is the partitions on the same device:
-    # - 0 means the entire disk
-    # - 1 is the primary
-    # - 2 is extended
-    # - 5 is logical partitions
-    # The maximum number of partitions is 15.
-    #
-    # Use `$ sudo fdisk -l` and `$ sudo sfdisk -l /dev/sda` for more information.
-    with open("/proc/partitions", "r") as f:
-        devices = []
-        
-        for line in f.readlines()[2:]:  # skip header lines
-            words = [word.strip() for word in line.split()]
-            minor_number = int(words[1])
-            device_name = words[3]
-            
-            if (minor_number % 16) == 0:
-                path = "/sys/class/block/" + device_name
+class Manager:
+    def __init__(self):
+        self.devices = []  # type: List[str]
+        self.get_media_devices()
+
+    def get_media_devices(self):
+        # If the major number is 8, that indicates it to be a disk device.
+        #
+        # The minor number is the partitions on the same device:
+        # - 0 means the entire disk
+        # - 1 is the primary
+        # - 2 is extended
+        # - 5 is logical partitions
+        # The maximum number of partitions is 15.
+        #
+        # Use `$ sudo fdisk -l` and `$ sudo sfdisk -l /dev/sda` for more information.
+        with open("/proc/partitions", "r") as f:
+            for line in f.readlines()[2:]:  # skip header lines
+                words = [word.strip() for word in line.split()]
+                minor_number = int(words[1])
+                device_name = words[3]
                 
-                if os.path.islink(path):
-                    if os.path.realpath(path).find("/usb") > 0:
-                        devices.append("/dev/" + device_name)
-        
-        return devices
+                if (minor_number % 16) == 0:
+                    path = "/sys/class/block/" + device_name
+                    
+                    if os.path.islink(path):
+                        if os.path.realpath(path).find("/usb") > 0:
+                            self.devices.append("/dev/" + device_name)
 
+    @staticmethod
+    def get_device_name(device):
+        return os.path.basename(device)
 
-def get_device_name(device):
-    return os.path.basename(device)
+    def get_device_block_path(self, device):
+        return "/sys/block/%s" % self.get_device_name(device)
 
+    def get_media_path(self, device):
+        return "/media/" + self.get_device_name(device)
 
-def get_device_block_path(device):
-    return "/sys/block/%s" % get_device_name(device)
+    @staticmethod
+    def get_partition(device):
+        output = subprocess.check_output([
+            "fdisk",
+            "-l",
+            device
+        ]).decode()
+        return output.split("\n")[-2].split()[0].strip()
 
+    def is_mounted(self, device):
+        return os.path.ismount(self.get_media_path(device))
 
-def get_media_path(device):
-    return "/media/" + get_device_name(device)
+    def mount_partition(self, partition, name="usb"):
+        path = self.get_media_path(name)
+        if not self.is_mounted(path):
+            os.mkdir(path)
+            subprocess.check_call([
+                "mount",
+                partition,
+                path,
+            ])
 
+    def unmount_partition(self, name="usb"):
+        path = self.get_media_path(name)
+        if self.is_mounted(path):
+            subprocess.check_call([
+                "umount",
+                path,
+            ])
+            # os.system("rm -rf " + path)
 
-def get_partition(device):
-    os.system("fdisk -l %s > output" % device)
-    with open("output", "r") as f:
-        data = f.read()
-        return data.split("\n")[-2].split()[0].strip()
+    def mount(self, device, name=None):
+        if not name:
+            name = self.get_device_name(device)
+        self.mount_partition(self.get_partition(device), name)
 
+    def unmount(self, device, name=None):
+        if not name:
+            name = self.get_device_name(device)
+        self.unmount_partition(name)
 
-def is_mounted(device):
-    return os.path.ismount(get_media_path(device))
+    def is_removable(self, device):
+        path = self.get_device_block_path(device) + "/removable"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                return f.read().strip() == "1"
+        return None
 
+    def get_size(self, device):
+        path = self.get_device_block_path(device) + "/size"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                # Multiply by 512, as Linux sectors are always considered to be 512 bytes long
+                return int(f.read().strip()) * 512
+        return -1
 
-def mount_partition(partition, name="usb"):
-    path = get_media_path(name)
-    if not is_mounted(path):
-        os.mkdir(path)
-        subprocess.check_call([
-            "mount",
-            partition,
-            path,
-        ])
+    def get_model(self, device):
+        path = self.get_device_block_path(device) + "/device/model"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                return f.read().strip()
+        return None
 
+    def get_vendor(self, device):
+        path = self.get_device_block_path(device) + "/device/vendor"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                return f.read().strip()
+        return None
 
-def unmount_partition(name="usb"):
-    path = get_media_path(name)
-    if is_mounted(path):
-        os.system("umount " + path)
-        # os.system("rm -rf " + path)
-
-
-def mount(device, name=None):
-    if not name:
-        name = get_device_name(device)
-    mount_partition(get_partition(device), name)
-
-
-def unmount(device, name=None):
-    if not name:
-        name = get_device_name(device)
-    unmount_partition(name)
-
-
-def is_removable(device):
-    path = get_device_block_path(device) + "/removable"
-    
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return f.read().strip() == "1"
-    
-    return None
-
-
-def get_size(device):
-    path = get_device_block_path(device) + "/size"
-    
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            # Multiply by 512, as Linux sectors are always considered to be 512 bytes long
-            return int(f.read().strip()) * 512
-    
-    return -1
-
-
-def get_model(device):
-    path = get_device_block_path(device) + "/device/model"
-    
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return f.read().strip()
-    return None
-
-
-def get_vendor(device):
-    path = get_device_block_path(device) + "/device/vendor"
-    
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return f.read().strip()
-    return None
-
-
-def print_me():
-    devices = list_media_devices()
-    for device in devices:
-        mount(device)
-        print("Drive:", get_device_name(device))
-        print("Mounted:", "Yes" if is_mounted(device) else "No")
-        print("Removable:", "Yes" if is_removable(device) else "No")
-        print("Size:", get_size(device), "bytes")
-        print("Size:", "%.2f" % (get_size(device) / 1024 ** 3), "GB")
-        print("Model:", get_model(device))
-        print("Vendor:", get_vendor(device))
-        print(" ")
-        unmount(device)
+    def print_me(self):
+        for device in self.devices:
+            self.mount(device)
+            print("Drive:", self.get_device_name(device))
+            print("Mounted:", "Yes" if self.is_mounted(device) else "No")
+            print("Removable:", "Yes" if self.is_removable(device) else "No")
+            print("Size:", self.get_size(device), "bytes")
+            print("Size:", "%.2f" % (self.get_size(device) / 1024 ** 3), "GB")
+            print("Model:", self.get_model(device))
+            print("Vendor:", self.get_vendor(device))
+            self.unmount(device)
