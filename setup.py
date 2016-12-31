@@ -1,11 +1,11 @@
 import setuptools
 
 setuptools.setup(
-    name='mount',
-    version='0.0.4',
+    name='pymount',
+    version='0.0.5',
     description='module to help you mount and unmount file systems',
     long_description='programmatic API to /proc/partitions and /proc/mounts',
-    url='https://veltzer.github.io/mount',
+    url='https://veltzer.github.io/pymount',
     author='Mark Veltzer',
     author_email='mark.veltzer@gmail.com',
     license='GPL3',
@@ -16,7 +16,7 @@ setuptools.setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
     ],
-    keywords='mount umount partition',
+    keywords='pymount mount umount partition',
     package_dir={'': 'src'},
     packages=setuptools.find_packages('src'),
 )
