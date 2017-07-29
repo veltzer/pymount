@@ -19,6 +19,5 @@ setuptools.setup(
         'Programming Language :: Python :: 3',
     ],
     keywords='pymount mount umount partition',
-    package_dir={'': 'src'},
-    packages=setuptools.find_packages('src'),
+    packages=setuptools.find_packages(),
 )
