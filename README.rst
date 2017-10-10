@@ -1,1 +1,2 @@
-This is to make 'python setup.py sdist' happy...
+# pymount
+module that deals with mounting and unmounting drives in linux
