@@ -1,3 +1,10 @@
-# production
-# development tools
+# THIS IS AN AUTO-GENERATED FILE. DO NOT EDIT!
+# dev requirements
+pyclassifiers
 pypitools
+pydmt
+Sphinx
+# test requirements
+pylint
+pytest
+pyflakes
