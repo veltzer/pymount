@@ -12,5 +12,6 @@ project website: https://veltzer.github.io/pymount
 
 author: Mark Veltzer
 
-version: 0.0.9
+version: 0.0.10
+
 
