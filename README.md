@@ -17,8 +17,11 @@
 ![Downloads](https://pepy.tech/badge/pymount/week)
 
 
+
 module to help you mount and unmount file systems
 
 project website: <https://veltzer.github.io/pymount>
+
+chat with me at [![gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/veltzer/mark.veltzer)
 
 
