@@ -16,6 +16,8 @@
 ![Downloads](https://pepy.tech/badge/pymount/month)
 ![Downloads](https://pepy.tech/badge/pymount/week)
 
+[![Known Vulnerabilities](https://snyk.io/test/github/veltzer/pymount/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/veltzer/pymount?targetFile=requirements.txt)
+
 
 
 module to help you mount and unmount file systems
