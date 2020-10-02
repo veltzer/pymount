@@ -13,12 +13,11 @@ ALL_PACKAGES:=$(patsubst %/,%,$(dir $(wildcard */__init__.py)))
 
 .PHONY: all
 all:
-	@pymakehelper only_print_on_error --print_command True pytest tests
-	@pymakehelper only_print_on_error --print_command True pyflakes $(ALL_PACKAGES)
-	@pymakehelper only_print_on_error --print_command True pylint --reports=n --score=n $(ALL_PACKAGES) 
-	@pymakehelper only_print_on_error --print_command True flake8 $(ALL_PACKAGES)
+	@pymakehelper only_print_on_error --print_command True python -m pytest tests
+	@pymakehelper only_print_on_error --print_command True python -m pylint --reports=n --score=n $(ALL_PACKAGES) 
+	@pymakehelper only_print_on_error --print_command True python -m flake8 $(ALL_PACKAGES)
 	@pymakehelper only_print_on_error --print_command True python -m unittest discover -s .
-	@pymakehelper only_print_on_error --print_command True pytest --cov=$(PACKAGE_NAME) --cov-report=xml --cov-report=html
+	@pymakehelper only_print_on_error --print_command True python -m pytest --cov=$(PACKAGE_NAME) --cov-report=xml --cov-report=html
 
 .PHONY: pytest
 pytest:
