@@ -6,7 +6,7 @@ from typing import List, Dict
 class Manager:
     def __init__(self):
         self._devices: List[str] = []
-        self._mounted_devices: Dict[str,str] = dict()
+        self._mounted_devices: Dict[str,str] = {}
         self._get_media_devices()
         self._get_mounts()
 
@@ -26,10 +26,10 @@ class Manager:
                 words = [word.strip() for word in line.split()]
                 minor_number = int(words[1])
                 device_name = words[3]
-                
+
                 if (minor_number % 16) == 0:
                     path = "/sys/class/block/" + device_name
-                    
+
                     if os.path.islink(path):
                         if os.path.realpath(path).find("/usb") > 0:
                             self._devices.append("/dev/" + device_name)

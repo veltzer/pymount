@@ -14,7 +14,6 @@
 ![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
 
 ![build](https://github.com/veltzer/pymount/workflows/build/badge.svg)
-
 module to help you mount and unmount file systems
 
 project website: https://veltzer.github.io/pymount

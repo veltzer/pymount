@@ -18,10 +18,10 @@ project_long_description = project_short_description
 # keywords to put on html pages or for search, dont put the name of the project or my details
 # as they will be added automatically...
 project_keywords = [
-        'pymount',
-        'mount',
-        'umount',
-        'partition',
+    'pymount',
+    'mount',
+    'umount',
+    'partition',
 ]
 project_license = 'MIT'
 project_year_started = '2016'
