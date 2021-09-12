@@ -54,5 +54,5 @@ setuptools.setup(
     ],
     entry_points={"console_scripts": [
     ]},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )
