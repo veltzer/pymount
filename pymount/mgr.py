@@ -54,7 +54,7 @@ class Manager:
         return os.path.basename(device)
 
     def get_device_block_path(self, device):
-        return "/sys/block/%s" % self.get_device_name(device)
+        return f"/sys/block/{self.get_device_name(device)}"
 
     def get_media_path(self, device):
         return "/media/" + self.get_device_name(device)
@@ -129,11 +129,12 @@ class Manager:
     def print_me(self):
         for device in self._devices:
             self.mount(device)
-            print("Drive:", self.get_device_name(device))
-            print("Mounted:", "Yes" if self.is_mounted(device) else "No")
-            print("Removable:", "Yes" if self.is_removable(device) else "No")
-            print("Size:", self.get_size(device), "bytes")
-            print("Size:", "%.2f" % (self.get_size(device) / 1024 ** 3), "GB")
-            print("Model:", self.get_model(device))
-            print("Vendor:", self.get_vendor(device))
+            print(f"Drive: {self.get_device_name(device)}")
+            print(f"Mounted: {self.is_mounted(device)}")
+            print(f"Removable: {self.is_removable(device)}")
+            print(f"Size: {self.get_size(device)} bytes")
+            size = self.get_size(device) / 1024 ** 3
+            print(f"Size: {size:.2f}")
+            print(f"Model: {self.get_model(device)}")
+            print(f"Vendor: {self.get_vendor(device)}")
             self.unmount(device)
