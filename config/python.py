@@ -3,10 +3,12 @@ import config.project
 package_name = config.project.project_name
 
 dev_requires = [
-    "pyclassifiers",
     "pypitools",
-    "pydmt",
-    "Sphinx",
+]
+config_requires = [
+    "pyclassifiers",
+]
+make_requires = [
     "pymakehelper",
 ]
 test_requires = [
