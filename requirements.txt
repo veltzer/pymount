@@ -1,10 +1,6 @@
 # THIS IS AN AUTO-GENERATED FILE. DO NOT EDIT!
 # dev requirements
-pyclassifiers
 pypitools
-pydmt
-Sphinx
-pymakehelper
 # test requirements
 pylint
 pytest
