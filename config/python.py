@@ -6,6 +6,8 @@ config_requires = [
 ]
 make_requires = [
     "pymakehelper",
+    "pyclassifiers",
+    "pydmt",
 ]
 test_requires = [
     "pylint",
