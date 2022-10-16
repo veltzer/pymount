@@ -1,10 +1,1 @@
 # THIS IS AN AUTO-GENERATED FILE. DO NOT EDIT!
-# dev requirements
-pypitools
-# test requirements
-pylint
-pytest
-pytest-cov
-pyflakes
-flake8
-mypy
