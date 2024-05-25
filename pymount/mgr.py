@@ -6,7 +6,7 @@ from typing import List, Dict
 class Manager:
     def __init__(self):
         self._devices: List[str] = []
-        self._mounted_devices: Dict[str,str] = {}
+        self._mounted_devices: Dict[str, str] = {}
         self._get_media_devices()
         self._get_mounts()
 
