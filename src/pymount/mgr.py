@@ -9,8 +9,8 @@ from typing import List, Dict
 
 class Manager:
     def __init__(self):
-        self._devices: List[str] = []
-        self._mounted_devices: Dict[str, str] = {}
+        self._devices: list[str] = []
+        self._mounted_devices: dict[str, str] = {}
         self._get_media_devices()
         self._get_mounts()
 
@@ -25,7 +25,7 @@ class Manager:
         # The maximum number of partitions is 15.
         #
         # Use `$ sudo fdisk -l` and `$ sudo sfdisk -l /dev/sda` for more information.
-        with open("/proc/partitions", "rt") as f:
+        with open("/proc/partitions") as f:
             for line in f.readlines()[2:]:  # skip header lines
                 words = [word.strip() for word in line.split()]
                 minor_number = int(words[1])
@@ -39,7 +39,7 @@ class Manager:
                             self._devices.append("/dev/" + device_name)
 
     def _get_mounts(self):
-        with open("/proc/mounts", "rt") as file_handle:
+        with open("/proc/mounts") as file_handle:
             for line in file_handle:
                 line = line.rstrip()
                 parts = line.split(" ")
@@ -104,14 +104,14 @@ class Manager:
     def is_removable(self, device):
         path = self.get_device_block_path(device) + "/removable"
         if os.path.exists(path):
-            with open(path, "r") as f:
+            with open(path) as f:
                 return f.read().strip() == "1"
         return None
 
     def get_size(self, device):
         path = self.get_device_block_path(device) + "/size"
         if os.path.exists(path):
-            with open(path, "r") as f:
+            with open(path) as f:
                 # Multiply by 512, as Linux sectors are always considered to be 512 bytes long
                 return int(f.read().strip()) * 512
         return -1
@@ -119,14 +119,14 @@ class Manager:
     def get_model(self, device):
         path = self.get_device_block_path(device) + "/device/model"
         if os.path.exists(path):
-            with open(path, "r") as f:
+            with open(path) as f:
                 return f.read().strip()
         return None
 
     def get_vendor(self, device):
         path = self.get_device_block_path(device) + "/device/vendor"
         if os.path.exists(path):
-            with open(path, "r") as f:
+            with open(path) as f:
                 return f.read().strip()
         return None
 
