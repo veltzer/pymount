@@ -4,7 +4,6 @@ Mount manager
 
 import os
 import subprocess
-from typing import List, Dict
 
 
 class Manager:
