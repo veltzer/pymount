@@ -46,3 +46,22 @@ line-length = 130
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pymount"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/pymount/",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml"
+]
+exclude = [
+    ".gitignore",
+    ".github/",
+    "tests/",
+    "docs/",
+    "config/",
+    "*.md",
+]
