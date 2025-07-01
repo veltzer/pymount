@@ -1,18 +1,7 @@
 """ python deps for this project """
 
-config_requires: list[str] = [
-    "pyclassifiers",
-]
-build_requires: list[str] = [
-    "hatch",
-    "pydmt",
-    "pymakehelper",
-    "pycmdtools",
-]
-test_requires: list[str] = [
-    "pylint",
-    "pytest",
-    "mypy",
-    "ruff",
-]
-requires = config_requires + build_requires + test_requires
+import config.shared
+
+build_requires: list[str] = config.shared.PBUILD
+test_requires: list[str] = config.shared.PTEST
+requires = build_requires + test_requires
