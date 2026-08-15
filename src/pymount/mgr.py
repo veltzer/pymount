@@ -33,9 +33,8 @@ class Manager:
                 if (minor_number % 16) == 0:
                     path = "/sys/class/block/" + device_name
 
-                    if os.path.islink(path):
-                        if os.path.realpath(path).find("/usb") > 0:
-                            self._devices.append("/dev/" + device_name)
+                    if os.path.islink(path) and os.path.realpath(path).find("/usb") > 0:
+                        self._devices.append("/dev/" + device_name)
 
     def _get_mounts(self):
         with open("/proc/mounts") as file_handle:
