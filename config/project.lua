@@ -6,3 +6,4 @@ KEYWORDS = {
     "umount",
     "partition",
 }
+PYPI = true
