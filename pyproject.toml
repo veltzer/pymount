@@ -33,6 +33,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 
+[dependency-groups]
+dev = [
+    "mypy",
+    "pylint",
+    "pytest",
+    "ruff",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/veltzer/pymount"
 "Bug Tracker" = "https://github.com/veltzer/pymount/issues"
