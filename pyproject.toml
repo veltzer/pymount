@@ -39,6 +39,7 @@ dev = [
     "pylint",
     "pytest",
     "ruff",
+    "sphinx",
 ]
 
 [project.urls]
