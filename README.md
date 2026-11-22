@@ -5,7 +5,7 @@
 
 description: module to help you mount and unmount file systems
 
-project website: https://veltzer.github.io/pymount
+project website: <https://veltzer.github.io/pymount>
 
 author: Mark Veltzer
 
