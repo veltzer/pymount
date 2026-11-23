@@ -38,9 +38,8 @@ class Manager:
 
     def _get_mounts(self):
         with open("/proc/mounts") as file_handle:
-            for line in file_handle:
-                line = line.rstrip()
-                parts = line.split(" ")
+            for raw_line in file_handle:
+                parts = raw_line.rstrip().split(" ")
                 part_device = parts[0]
                 part_mount_point = parts[1]
                 self._mounted_devices[part_device] = part_mount_point
