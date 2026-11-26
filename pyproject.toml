@@ -85,10 +85,6 @@ search-path = [
     "src",
     ".",
 ]
-# Third-party libraries without type information.
-ignore-missing-imports = [
-    "pymount.*",
-]
 
 [tool.pyrefly.errors]
 no-any-return = "error"
