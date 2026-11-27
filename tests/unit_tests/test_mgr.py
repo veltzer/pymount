@@ -7,11 +7,15 @@ pure helper touches, keeping the tests independent of the host's disks.
 
 import io
 import unittest
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
 
 from pymount import mgr
+
+if TYPE_CHECKING:
+    from _io import StringIO
 
 
 def _manager(mounts: str = "") -> mgr.Manager:
@@ -21,7 +25,7 @@ def _manager(mounts: str = "") -> mgr.Manager:
         "/proc/mounts": mounts,
     }
 
-    def fake_open(path):
+    def fake_open(path: str) -> StringIO:
         return io.StringIO(files[path])
 
     with patch("builtins.open", side_effect=fake_open):
@@ -29,29 +33,29 @@ def _manager(mounts: str = "") -> mgr.Manager:
 
 
 class DeviceNameTests(unittest.TestCase):
-    def test_get_device_name_strips_dev_prefix(self):
+    def test_get_device_name_strips_dev_prefix(self) -> None:
         assert mgr.Manager.get_device_name("/dev/sda") == "sda"
 
-    def test_get_device_block_path(self):
+    def test_get_device_block_path(self) -> None:
         manager = _manager()
         assert manager.get_device_block_path("/dev/sdb") == "/sys/block/sdb"
 
-    def test_get_media_path(self):
+    def test_get_media_path(self) -> None:
         manager = _manager()
         assert manager.get_media_path("/dev/sdc") == "/media/sdc"
 
 
 class MountLookupTests(unittest.TestCase):
-    def test_is_mounted_true_and_false(self):
+    def test_is_mounted_true_and_false(self) -> None:
         manager = _manager("/dev/sda1 /media/usb ext4 rw 0 0\n")
         assert manager.is_mounted("/dev/sda1")
         assert not manager.is_mounted("/dev/sdz9")
 
-    def test_get_mount_point_returns_stored_path(self):
+    def test_get_mount_point_returns_stored_path(self) -> None:
         manager = _manager("/dev/sda1 /media/usb ext4 rw 0 0\n")
         assert manager.get_mount_point("/dev/sda1") == "/media/usb"
 
-    def test_get_mount_point_missing_raises(self):
+    def test_get_mount_point_missing_raises(self) -> None:
         manager = _manager()
         with pytest.raises(KeyError):
             manager.get_mount_point("/dev/nope")

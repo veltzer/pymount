@@ -7,13 +7,13 @@ import subprocess
 
 
 class Manager:
-    def __init__(self):
+    def __init__(self) -> None:
         self._devices: list[str] = []
         self._mounted_devices: dict[str, str] = {}
         self._get_media_devices()
         self._get_mounts()
 
-    def _get_media_devices(self):
+    def _get_media_devices(self) -> None:
         # If the major number is 8, that indicates it to be a disk device.
         #
         # The minor number is the partitions on the same device:
@@ -36,7 +36,7 @@ class Manager:
                     if os.path.islink(path) and os.path.realpath(path).find("/usb") > 0:
                         self._devices.append("/dev/" + device_name)
 
-    def _get_mounts(self):
+    def _get_mounts(self) -> None:
         with open("/proc/mounts") as file_handle:
             for raw_line in file_handle:
                 parts = raw_line.rstrip().split(" ")
@@ -44,24 +44,24 @@ class Manager:
                 part_mount_point = parts[1]
                 self._mounted_devices[part_device] = part_mount_point
 
-    def is_mounted(self, device):
+    def is_mounted(self, device: str) -> bool:
         return device in self._mounted_devices
 
-    def get_mount_point(self, device):
+    def get_mount_point(self, device: str) -> str:
         return self._mounted_devices[device]
 
     @staticmethod
-    def get_device_name(device):
+    def get_device_name(device: str):
         return os.path.basename(device)
 
-    def get_device_block_path(self, device):
+    def get_device_block_path(self, device: str) -> str:
         return f"/sys/block/{self.get_device_name(device)}"
 
-    def get_media_path(self, device):
+    def get_media_path(self, device: str):
         return "/media/" + self.get_device_name(device)
 
     @staticmethod
-    def get_partition(device):
+    def get_partition(device: str) -> str:
         output = subprocess.check_output([
             "fdisk",
             "-l",
@@ -69,7 +69,7 @@ class Manager:
         ]).decode()
         return output.split("\n")[-2].split()[0].strip()
 
-    def mount_partition(self, partition, name="usb"):
+    def mount_partition(self, partition: str, name: str = "usb") -> None:
         path = self.get_media_path(name)
         if not self.is_mounted(path):
             os.mkdir(path)
@@ -79,7 +79,7 @@ class Manager:
                 path,
             ])
 
-    def unmount_partition(self, name="usb"):
+    def unmount_partition(self, name: str = "usb") -> None:
         path = self.get_media_path(name)
         if self.is_mounted(path):
             subprocess.check_call([
@@ -87,24 +87,24 @@ class Manager:
                 path,
             ])
 
-    def mount(self, device, name=None):
+    def mount(self, device: str, name: str | None = None) -> None:
         if not name:
             name = self.get_device_name(device)
         self.mount_partition(self.get_partition(device), name)
 
-    def unmount(self, device, name=None):
+    def unmount(self, device: str, name: str | None = None) -> None:
         if not name:
             name = self.get_device_name(device)
         self.unmount_partition(name)
 
-    def is_removable(self, device):
+    def is_removable(self, device: str) -> bool | None:
         path = self.get_device_block_path(device) + "/removable"
         if os.path.exists(path):
             with open(path) as f:
                 return f.read().strip() == "1"
         return None
 
-    def get_size(self, device):
+    def get_size(self, device: str) -> int:
         path = self.get_device_block_path(device) + "/size"
         if os.path.exists(path):
             with open(path) as f:
@@ -112,21 +112,21 @@ class Manager:
                 return int(f.read().strip()) * 512
         return -1
 
-    def get_model(self, device):
+    def get_model(self, device: str) -> str | None:
         path = self.get_device_block_path(device) + "/device/model"
         if os.path.exists(path):
             with open(path) as f:
                 return f.read().strip()
         return None
 
-    def get_vendor(self, device):
+    def get_vendor(self, device: str) -> str | None:
         path = self.get_device_block_path(device) + "/device/vendor"
         if os.path.exists(path):
             with open(path) as f:
                 return f.read().strip()
         return None
 
-    def print_me(self):
+    def print_me(self) -> None:
         for device in self._devices:
             self.mount(device)
             print(f"Drive: {self.get_device_name(device)}")
