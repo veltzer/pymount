@@ -86,7 +86,6 @@ class Manager:
                 "umount",
                 path,
             ])
-            # os.system("rm -rf " + path)
 
     def mount(self, device, name=None):
         if not name:
